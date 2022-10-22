@@ -13,3 +13,4 @@ alias v='nvim'
 
 alias lisa='ls -lisa'
 alias liga='exa -liga'
+alias lia='lsd -lia'
