@@ -18,8 +18,8 @@ vim.cmd([[
   augroup end
 ]])
 
-local status_ok, packer = pcall(require, "packer")
-if not status_ok then
+local packer_status_ok, packer = pcall(require, "packer")
+if not packer_status_ok then
     return
 end
 
@@ -81,7 +81,7 @@ return packer.startup(function(use)
     use("Pocco81/true-zen.nvim")
     use("rcarriga/nvim-notify")
     use("ahmedkhalf/project.nvim")
-
+    use("stevearc/overseer.nvim")
     -- Colorschemes
     use({ "catppuccin/nvim", run = ":CatppuccinCompile" })
 

@@ -209,6 +209,13 @@ local mappings = {
         },
     },
 
+    o = {
+        name = "Overseer",
+        o = { "<cmd>OverseerToggle<cr>", "Toggle" },
+        r = { "<cmd>OverseerRun<cr>", "Run" },
+        b = { "<cmd>OverseerBuild<cr>", "Build" },
+    },
+
     d = {
         name = "DAP",
         ["<F4>"] = { "<cmd>lua require('dapui').toggle()<cr>", "UI Toggle" },
