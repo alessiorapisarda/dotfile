@@ -18,6 +18,10 @@ if not lsplines_status_ok then
     return
 end
 
+local semantic_tokens_status_ok, semantic_tokens = pcall(require, "nvim-semantic-tokens")
+if not semantic_tokens_status_ok then
+    return
+end
 
 vim.diagnostic.config({
     virtual_text = false,
@@ -42,6 +46,30 @@ vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.s
     border = "rounded",
 })
 
+local signs = {
+    { name = "DiagnosticSignError", text = "" },
+    { name = "DiagnosticSignWarn", text = "" },
+    { name = "DiagnosticSignHint", text = "" },
+    { name = "DiagnosticSignInfo", text = "" },
+}
+
+for _, sign in ipairs(signs) do
+    vim.fn.sign_define(sign.name, { texthl = sign.name, text = sign.text, numhl = "" })
+end
+
+lsp_lines.setup()
+
+-- Experimental
+semantic_tokens.setup {
+    preset = "default",
+    -- highlighters is a list of modules following the interface of nvim-semantic-tokens.table-highlighter or
+    -- function with the signature: highlight_token(ctx, token, highlight) where
+    --        ctx (as defined in :h lsp-handler)
+    --        token  (as defined in :h vim.lsp.semantic_tokens.on_full())
+    --        highlight (a helper function that you can call (also multiple times) with the determined highlight group(s) as the only parameter)
+    highlighters = { require 'nvim-semantic-tokens.table-highlighter' }
+}
+
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
 local on_attach = function(client, bufnr)
@@ -63,6 +91,21 @@ local on_attach = function(client, bufnr)
     keymap(bufnr, "n", "<leader>lr", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
     keymap(bufnr, "n", "<leader>ls", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts)
     keymap(bufnr, "n", "<leader>lq", "<cmd>lua vim.diagnostic.setloclist()<CR>", opts)
+
+    -- Semantic Tokens
+    local caps = client.server_capabilities
+    if caps.semanticTokensProvider and caps.semanticTokensProvider.full then
+        local augroup = vim.api.nvim_create_augroup("SemanticTokens", {})
+        vim.api.nvim_create_autocmd("TextChanged", {
+            group = augroup,
+            buffer = bufnr,
+            callback = function()
+                vim.lsp.buf.semantic_tokens_full()
+            end,
+        })
+        -- fire it first time on load as well
+        vim.lsp.buf.semantic_tokens_full()
+    end
 end
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -106,31 +149,3 @@ mason_lspconfig.setup_handlers({
         })
     end,
 })
-
-local signs = {
-    { name = "DiagnosticSignError", text = "" },
-    { name = "DiagnosticSignWarn", text = "" },
-    { name = "DiagnosticSignHint", text = "" },
-    { name = "DiagnosticSignInfo", text = "" },
-}
-
-for _, sign in ipairs(signs) do
-    vim.fn.sign_define(sign.name, { texthl = sign.name, text = sign.text, numhl = "" })
-end
-
-lsp_lines.setup()
-
--- Experimental
-require("nvim-semantic-tokens").setup {
-    preset = "default",
-    -- highlighters is a list of modules following the interface of nvim-semantic-tokens.table-highlighter or
-    -- function with the signature: highlight_token(ctx, token, highlight) where
-    --        ctx (as defined in :h lsp-handler)
-    --        token  (as defined in :h vim.lsp.semantic_tokens.on_full())
-    --        highlight (a helper function that you can call (also multiple times) with the determined highlight group(s) as the only parameter)
-    highlighters = { require 'nvim-semantic-tokens.table-highlighter' }
-}
-
-vim.cmd [[if &filetype == "cpp" || &filetype == "lua" || &filetype == "c" || &filetype == "rs"
-  autocmd BufEnter,TextChanged <buffer> lua require 'vim.lsp.buf'.semantic_tokens_full()
-endif]]

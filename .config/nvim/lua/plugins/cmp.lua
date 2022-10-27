@@ -23,6 +23,7 @@ lspkind.init({
 })
 
 local has_words_before = function()
+    if vim.api.nvim_buf_get_option(0, "buftype") == "prompt" then return false end
     local line, col = unpack(vim.api.nvim_win_get_cursor(0))
     return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
 end
@@ -47,8 +48,10 @@ cmp.setup({
             behavior = cmp.ConfirmBehavior.Replace,
             select = false,
         },
-        ["<Tab>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
+        ["<Tab>"] = vim.schedule_wrap(function(fallback)
+            if cmp.visible() and has_words_before() then
+                cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
+            elseif cmp.visible() then
                 cmp.select_next_item()
             elseif luasnip.expand_or_jumpable() then
                 luasnip.expand_or_jump()
@@ -73,39 +76,13 @@ cmp.setup({
     }),
     sources = cmp.config.sources({
         { name = "nvim_lsp" },
-        { name = "buffer" },
-        { name = "calc" },
-        { name = "path" },
+        { name = "nvim_lua" },
+        { name = "treesitter" },
         { name = "luasnip" }, -- For luasnip users.
-        { name = "copilot",
-            -- keyword_length = 0,
-            max_item_count = 3,
-            trigger_characters = {
-                {
-                    ".",
-                    ":",
-                    "(",
-                    "'",
-                    '"',
-                    "[",
-                    ",",
-                    "#",
-                    "*",
-                    "@",
-                    "|",
-                    "=",
-                    "-",
-                    "{",
-                    "/",
-                    "\\",
-                    "+",
-                    "?",
-                    " ",
-                    -- "\t",
-                    -- "\n",
-                },
-            },
-        },
+        { name = "copilot" },
+        { name = "buffer" },
+        { name = "path" },
+        { name = "calc" },
     }),
     formatting = {
         format = lspkind.cmp_format({
@@ -113,14 +90,14 @@ cmp.setup({
             with_text = true, -- show text alongside icons
             maxwidth = 50, -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
             menu = {
-                buffer = "[Buffer]",
-                buffer_lines = "[Buffer-Lines]",
                 nvim_lsp = "[LSP]",
+                nvim_lua = "[Lua]",
+                treesitter = "[Treesitter]",
                 luasnip = "[LuaSnip]",
-                calc = "[Calc]",
-                emoji = "[Emoji]",
+                copilot = "[Copilot]",
+                buffer = "[Buffer]",
                 path = "[Path]",
-                copilot = "[Copilot]"
+                calc = "[Calc]",
             },
         }),
     },
@@ -134,23 +111,6 @@ cmp.setup({
     confirm_opts = {
         behavior = cmp.ConfirmBehavior.Replace,
         select = false,
-    },
-    cmdline = {
-        enable = true,
-        options = {
-            {
-                type = ":",
-                sources = {
-                    { name = "path" },
-                },
-            },
-            {
-                type = { "/", "?" },
-                sources = {
-                    { name = "buffer" },
-                },
-            },
-        },
     },
     enabled = function()
         if vim.bo.buftype == 'prompt' then
@@ -166,4 +126,20 @@ cmp.setup({
                 and not context.in_syntax_group("Comment")
         end
     end
+})
+
+cmp.setup.cmdline({ '/', '?' }, {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = {
+        { name = 'buffer' }
+    }
+})
+
+cmp.setup.cmdline(':', {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = cmp.config.sources({
+        { name = 'path' }
+    }, {
+        { name = 'cmdline' }
+    })
 })
