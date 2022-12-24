@@ -28,4 +28,13 @@ return {
         end,
     },
     { "rcarriga/nvim-notify", event = "VimEnter" },
+    {
+        "jackMort/ChatGPT.nvim",
+        cmd = "ChatGPT",
+        config = function()
+            require("chatgpt").setup({
+                -- optional configuration
+            })
+        end,
+    },
 }
