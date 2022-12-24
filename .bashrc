@@ -53,6 +53,9 @@ fi
 # FZF
 export FZF_DEFAULT_COMMAND='ag -f -p ~/.gitignore -g ""'
 
+# OpenAI
+export OPENAI_API_KEY=$(cat ~/.openai)
+
 # Starship
 eval "$(starship init bash)"
 
