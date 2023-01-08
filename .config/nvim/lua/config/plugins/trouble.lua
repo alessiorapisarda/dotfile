@@ -1,14 +1,15 @@
 local M = {
-    "folke/trouble.nvim",
+	"folke/trouble.nvim",
+	cmd = { "TroubleToggle" },
 }
 
 function M.config()
-    local status_ok, trouble = pcall(require, "trouble")
-    if not status_ok then
-        return
-    end
+	local trouble_status_ok, trouble = pcall(require, "trouble")
+	if not trouble_status_ok then
+		return
+	end
 
-    trouble.setup({})
+	trouble.setup({})
 end
 
 return M

@@ -61,6 +61,7 @@ eval "$(starship init bash)"
 
 # Autostart SSH-Agent if on WSL
 if [ -z "$SSH_AUTH_SOCK" ] && [ -n "grep microsoft /proc/version" ]; then
+    export GPG_TTY=$(tty)
     eval `ssh-agent -s` &>/dev/null
 fi
 
