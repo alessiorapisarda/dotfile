@@ -1,31 +1,25 @@
-local M = {
-	"karb94/neoscroll.nvim",
-	keys = { "<C-u>", "<C-d>", "gg", "G" },
+return {
+    {
+        "karb94/neoscroll.nvim",
+        keys = { "<C-u>", "<C-d>", "gg", "G" },
+        opts = {
+            mappings = { "<C-u>", "<C-d>", "<C-y>", "<C-e>", "zt", "zz", "zb" },
+        },
+        config = function(_, opts)
+            local map = {}
+
+            map["<C-u>"] = { "scroll", { "-vim.wo.scroll", "true", "80" } }
+            map["<C-d>"] = { "scroll", { "vim.wo.scroll", "true", "80" } }
+            -- map["<C-b>"] = { "scroll", { "-vim.api.nvim_win_get_height(0)", "true", "250" } }
+            -- map["<C-f>"] = { "scroll", { "vim.api.nvim_win_get_height(0)", "true", "250" } }
+            map["<C-y>"] = { "scroll", { "-0.10", "false", "80" } }
+            map["<C-e>"] = { "scroll", { "0.10", "false", "80" } }
+            map["zt"] = { "zt", { "150" } }
+            map["zz"] = { "zz", { "150" } }
+            map["zb"] = { "zb", { "150" } }
+
+            require("neoscroll").setup(opts)
+            require("neoscroll.config").set_mappings(map)
+        end,
+    },
 }
-
-function M.config()
-	local neoscroll_status_ok, neoscroll = pcall(require, "neoscroll")
-	if not neoscroll_status_ok then
-		return
-	end
-
-	neoscroll.setup({
-		mappings = { "<C-u>", "<C-d>", "<C-y>", "<C-e>", "zt", "zz", "zb" },
-		-- respect_scrolloff = true,
-	})
-	local map = {}
-
-	map["<C-u>"] = { "scroll", { "-vim.wo.scroll", "true", "80" } }
-	map["<C-d>"] = { "scroll", { "vim.wo.scroll", "true", "80" } }
-	-- map["<C-b>"] = { "scroll", { "-vim.api.nvim_win_get_height(0)", "true", "250" } }
-	-- map["<C-f>"] = { "scroll", { "vim.api.nvim_win_get_height(0)", "true", "250" } }
-	map["<C-y>"] = { "scroll", { "-0.10", "false", "80" } }
-	map["<C-e>"] = { "scroll", { "0.10", "false", "80" } }
-	map["zt"] = { "zt", { "150" } }
-	map["zz"] = { "zz", { "150" } }
-	map["zb"] = { "zb", { "150" } }
-
-	require("neoscroll.config").set_mappings(map)
-end
-
-return M

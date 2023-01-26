@@ -1,15 +1,10 @@
-local M = {
-	"ahmedkhalf/project.nvim",
-	cmd = { "Telescope projects" },
+return {
+    {
+        "ahmedkhalf/project.nvim",
+        cmd = { "Telescope projects" },
+        opts = {},
+        config = function(_, opts)
+            require("project_nvim").setup(opts)
+        end,
+    },
 }
-
-function M.config()
-	local project_status_ok, project = pcall(require, "project-nvim")
-	if not project_status_ok then
-		return
-	end
-
-	project.setup()
-end
-
-return M

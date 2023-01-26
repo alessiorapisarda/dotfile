@@ -1,15 +1,17 @@
-local M = {
-	"folke/trouble.nvim",
-	cmd = { "TroubleToggle" },
+return {
+    {
+        "folke/trouble.nvim",
+        cmd = { "TroubleToggle" },
+        keys = {
+            { "<leader>xx", "<cmd>TroubleToggle<cr>", desc = "Toggle Trouble" },
+            { "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>", desc = "Document Diagnostics (Trouble)" },
+            { "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", desc = "Workspace Diagnostics (Trouble)" },
+        },
+        opts = {
+            use_diagnostic_signs = true,
+        },
+        config = function(_, opts)
+            require("trouble").setup(opts)
+        end,
+    },
 }
-
-function M.config()
-	local trouble_status_ok, trouble = pcall(require, "trouble")
-	if not trouble_status_ok then
-		return
-	end
-
-	trouble.setup({})
-end
-
-return M
