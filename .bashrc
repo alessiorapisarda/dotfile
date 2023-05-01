@@ -60,7 +60,7 @@ export OPENAI_API_KEY=$(cat ~/.openai)
 eval "$(starship init bash)"
 
 # Autostart SSH-Agent if on WSL
-if [ -z "$SSH_AUTH_SOCK" ] && grep -q Microsoft /proc/version; then
+if [ -z "$SSH_AUTH_SOCK" ] && grep -q WSL2 /proc/version; then
 	export GPG_TTY=$(tty)
 	eval "$(ssh-agent -s)" &>/dev/null
 fi

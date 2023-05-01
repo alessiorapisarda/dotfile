@@ -1,5 +1,5 @@
 # Dotfiles
-![Screenshot](https://i.ibb.co/G06zN7R/desktop.png)
+![Screenshot](https://i.ibb.co/W6hmjnf/desktop.png)
 
 ## Requirements
 
