@@ -19,8 +19,4 @@ return {
       })
     end,
   },
-  {
-    "andweeb/presence.nvim",
-    event = "BufReadPost",
-  },
 }
